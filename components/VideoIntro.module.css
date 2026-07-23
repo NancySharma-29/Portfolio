@@ -1,0 +1,346 @@
+.hero {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  background: var(--void);
+  isolation: isolate;
+}
+
+/* ---------------------------------------------------------------- video layers */
+
+.bgVideoWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bgVideo {
+  width: 110%;
+  height: 110%;
+  object-fit: cover;
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  filter: blur(38px) saturate(1.15) brightness(0.55);
+  transform: scale(1.15);
+  opacity: 0.85;
+}
+
+.fgVideoWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fgVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+/* ---------------------------------------------------------------- particle layer */
+
+.particleLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* ---------------------------------------------------------------- overlays */
+
+.gradientBottom {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(10, 8, 6, 0.15) 0%, rgba(10, 8, 6, 0) 30%, rgba(10, 8, 6, 0.35) 60%, rgba(10, 8, 6, 0.92) 100%),
+    linear-gradient(90deg, rgba(10, 8, 6, 0.55) 0%, rgba(10, 8, 6, 0) 35%, rgba(10, 8, 6, 0) 65%, rgba(10, 8, 6, 0.55) 100%);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 0 220px rgba(0, 0, 0, 0.65);
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------- content */
+
+.content {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 var(--edge) clamp(4.5rem, 9vh, 7rem);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ember);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.4rem;
+  opacity: 0;
+}
+
+.eyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 10px 2px var(--ember);
+}
+
+.nameStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 0.92;
+  color: var(--paper);
+  font-size: clamp(3.2rem, 11vw, 8.5rem);
+  letter-spacing: -0.01em;
+}
+
+.nameLine {
+  overflow: hidden;
+  display: block;
+}
+
+.nameLine span {
+  display: block;
+  transform: translateY(110%);
+}
+
+.nameLine.italic span {
+  font-style: italic;
+  font-weight: 400;
+  background: linear-gradient(120deg, var(--ember) 0%, #ffcf9e 55%, var(--ember) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 1.6rem 0 0;
+  max-width: 42ch;
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(0.98rem, 1.4vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--paper-dim);
+  opacity: 0;
+}
+
+.subtitle strong {
+  color: var(--paper);
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------- controls */
+
+.controls {
+  position: absolute;
+  right: var(--edge);
+  bottom: clamp(4.5rem, 9vh, 7rem);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  opacity: 0;
+}
+
+.glassBtn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(246, 239, 228, 0.18);
+  background: rgba(20, 16, 12, 0.35);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.4s var(--ease-cinematic), border-color 0.4s ease, background 0.4s ease;
+}
+
+.glassBtn:hover {
+  transform: scale(1.08);
+  border-color: var(--ember);
+  background: rgba(255, 138, 74, 0.12);
+}
+
+.glassBtn:active {
+  transform: scale(0.96);
+}
+
+.glassBtn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------------------------------------------------------------- sound badge */
+
+.soundBadge {
+  position: absolute;
+  top: clamp(1.5rem, 4vh, 2.75rem);
+  right: var(--edge);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem 0.55rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(246, 239, 228, 0.16);
+  background: rgba(20, 16, 12, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: var(--paper-dim);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-cinematic);
+}
+
+.soundBadge.hidden {
+  opacity: 0 !important;
+  pointer-events: none;
+  transform: translateY(-6px);
+}
+
+.soundPulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ember);
+  flex-shrink: 0;
+}
+
+.soundPulse::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid var(--ember);
+  animation: pulseRing 1.8s ease-out infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- scroll indicator */
+
+.scrollIndicator {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1.5rem, 3.5vh, 2.5rem);
+  z-index: 6;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  color: var(--paper-faint);
+  cursor: pointer;
+  opacity: 0;
+}
+
+.scrollLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.scrollLine {
+  position: relative;
+  width: 1px;
+  height: 46px;
+  background: rgba(246, 239, 228, 0.18);
+  overflow: hidden;
+}
+
+.scrollLine::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, var(--ember));
+  animation: scrollPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0% {
+    top: -100%;
+  }
+  60% {
+    top: 100%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------- responsive */
+
+@media (max-width: 640px) {
+  .controls {
+    right: var(--edge);
+    bottom: clamp(3.5rem, 12vh, 5rem);
+    flex-direction: row;
+  }
+
+  .soundBadge span {
+    display: none;
+  }
+
+  .subtitle {
+    max-width: 30ch;
+  }
+}

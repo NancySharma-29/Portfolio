@@ -1,0 +1,343 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import styles from './ResumeSection.module.css';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const SKILL_GROUPS = [
+  {
+    label: 'Data Analytics & Visualization',
+    items: [
+      'Exploratory Data Analysis (EDA)',
+      'Data Preparation',
+      'Technical KPI Definition',
+      'Data Storytelling & Strategy',
+      'Dashboard & Visual Design',
+    ],
+  },
+  {
+    label: 'Tools & Frameworks',
+    items: ['Power BI', 'GenAI-Powered Workflows'],
+  },
+  {
+    label: 'Programming & Query Languages',
+    items: ['Python', 'SQL (Relational Queries)', 'JavaScript'],
+  },
+  {
+    label: 'Software Development (Supporting Skill)',
+    items: ['HTML', 'CSS', 'Software Application Architectures'],
+  },
+];
+
+const PROJECTS = [
+  {
+    index: 'DS.01',
+    title: 'Data Analytics Corporate Simulations',
+    meta: 'Quantium & Tata Group · via Forage · Remote',
+    body: 'Completed retail analytics data workflows spanning cleaning, analysis, and strategic output evaluation for commercial application — then built enterprise-level dashboard strategies, defining the operational and technical KPIs that support data-driven executive leadership.',
+  },
+  {
+    index: 'DS.02',
+    title: 'Mood-Enhancing Social Media Extension',
+    meta: 'Front-End Lead · Academic Project',
+    body: 'Engineered the front-end application architecture with a modern web stack, shaping a responsive, UX-optimized interactive browser extension designed around user wellbeing.',
+  },
+  {
+    index: 'DS.03',
+    title: 'Data-Driven Career Navigation Platform',
+    meta: 'Co-Developer',
+    body: 'Co-developed a system built for undergraduate career planning, using relational queries and clean application workflows to structure and surface student paths.',
+  },
+];
+
+const EDUCATION = [
+  {
+    date: '2023 — 2026',
+    school: "St. Anne's First Grade College",
+    detail: 'Bachelor of Computer Applications (BCA) · Bengaluru, Karnataka',
+  },
+  {
+    date: '2021 — 2023',
+    school: 'Little Flower House Senior Secondary School',
+    detail: '12th Standard · Mathematics and Science',
+  },
+  {
+    date: '2020 — 2021',
+    school: 'St. Albert High School',
+    detail: '10th Standard · Mathematics and Computer Science',
+  },
+];
+
+const CERTIFICATIONS = [
+  { title: 'Tata GenAI Powered Data Analytics Job Simulation (Forage)', url: 'https://www.theforage.com/completion-certificates/ifobHAoMjQs9s6bKS/gMTdCXwDdLYoXZ3wG_ifobHAoMjQs9s6bKS_6a36c1d82fb5b3ec744dee8e_1783885749887_completion_certificate.pdf' },
+  { title: 'Quantium Data Analytics Job Simulation (Forage)', url: 'https://www.theforage.com/completion-certificates/32A6DqtsbF7LbKdcq/NkaC7knWtjSbi6aYv_32A6DqtsbF7LbKdcq_6a36c1d82fb5b3ec744dee8e_1784145538957_completion_certificate.pdf' },
+  { title: 'Tata Data Visualisation: Empowering Business with Effective Insights (Forage)', url: 'https://www.theforage.com/completion-certificates/ifobHAoMjQs9s6bKS/MyXvBcppsW2FkNYCX_ifobHAoMjQs9s6bKS_6a36c1d82fb5b3ec744dee8e_1784218009256_completion_certificate.pdf' },
+  { title: 'Foundations of Cybersecurity (Google / Coursera)', url: 'https://www.coursera.org/account/accomplishments/records/T9PYUT291B8Q' },
+];
+
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
+function PaletteIcon() {
+  return (
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="34" stroke="#ff8a4a" strokeWidth="1.4" opacity="0.6" />
+      <circle cx="34" cy="38" r="6" fill="#ff8a4a" opacity="0.85" />
+      <circle cx="62" cy="32" r="4" fill="#6fa8d8" opacity="0.8" />
+      <circle cx="66" cy="60" r="7" fill="#f6efe4" opacity="0.65" />
+      <circle cx="38" cy="66" r="4.5" fill="#c9531f" opacity="0.85" />
+      <path d="M50 16 A34 34 0 0 1 50 84" stroke="#f6efe4" strokeWidth="0.6" opacity="0.3" />
+    </svg>
+  );
+}
+
+function useReveal(selector, options = {}) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!ref.current) return undefined;
+    const ctx = gsap.context(() => {
+      const targets = ref.current.querySelectorAll(selector);
+      gsap.set(targets, { opacity: 0, y: options.y ?? 28 });
+      gsap.to(targets, {
+        opacity: 1,
+        y: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        stagger: options.stagger ?? 0.08,
+        scrollTrigger: {
+          trigger: ref.current,
+          start: 'top 78%',
+          once: true,
+        },
+      });
+
+      const meters = ref.current.querySelectorAll(`.${styles.skillMeterFill}`);
+      if (meters.length) {
+        gsap.to(meters, {
+          width: '100%',
+          duration: 1.4,
+          ease: 'power2.out',
+          stagger: 0.04,
+          scrollTrigger: {
+            trigger: ref.current,
+            start: 'top 78%',
+            once: true,
+          },
+        });
+      }
+    }, ref);
+    return () => ctx.revert();
+  }, [selector, options.stagger, options.y]);
+
+  return ref;
+}
+
+export default function ResumeSection() {
+  const aboutRef = useReveal(`.${styles.revealItem}`, { stagger: 0.12 });
+  const skillsRef = useReveal(`.${styles.skillGroup}`, { stagger: 0.1 });
+  const projectsRef = useReveal(`.${styles.projectRow}`, { stagger: 0.12 });
+  const eduRef = useReveal(`.${styles.timelineRow}`, { stagger: 0.1 });
+  const certRef = useReveal(`.${styles.certChip}`, { stagger: 0.06 });
+  const canvasRef = useReveal(`.${styles.revealItem}`, { stagger: 0.15 });
+  const footerRef = useReveal(`.${styles.revealItem}`, { stagger: 0.08 });
+
+  return (
+    <div className={styles.wrap} id="resume">
+      {/* ABOUT ------------------------------------------------------- */}
+      <section className={styles.section} ref={aboutRef} id="about">
+        <p className={`${styles.kicker} ${styles.revealItem}`}>
+          <span className={styles.kickerBar} />
+          Profile
+        </p>
+        <div className={styles.aboutGrid}>
+          <div className={`${styles.profileImageWrapper} ${styles.revealItem}`}>
+             <img src="https://github.com/NancySharma-29.png" alt="Nancy Sharma" className={styles.profileImage} />
+          </div>
+          <div className={styles.aboutContent}>
+            <p className={`${styles.aboutText} ${styles.revealItem}`}>
+              Recent <strong>Computer Applications (BCA)</strong> graduate
+              specializing in <strong>data analytics and visualization</strong>,
+              with generative AI and a working foundation in software
+              development to back it up. Competent in cleaning, structuring,
+              and visualizing complex datasets into actionable business
+              insight — bridging the gap between raw data and clear decisions.
+              Driven by an analytical mindset sharpened through corporate
+              simulations at organizations like <strong>Tata Group</strong> and{' '}
+              <strong>Quantium</strong>.
+            </p>
+            <div className={`${styles.statList} ${styles.revealItem}`}>
+              <div className={styles.statRow}>
+                <span className={styles.statLabel}>Target role</span>
+                <span className={styles.statValue}>Data Analyst</span>
+              </div>
+              <div className={styles.statRow}>
+                <span className={styles.statLabel}>Based in</span>
+                <span className={styles.statValue}>Bangalore, Karnataka, India</span>
+              </div>
+              <div className={styles.statRow}>
+                <span className={styles.statLabel}>Core tools</span>
+                <span className={styles.statValue}>Power BI · SQL · Python</span>
+              </div>
+              <div className={styles.statRow}>
+                <span className={styles.statLabel}>Graduating</span>
+                <span className={styles.statValue}>July 2026</span>
+              </div>
+              <div className={styles.statRow}>
+                <span className={styles.statLabel}>Email</span>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nsharma292004@gmail.com" target="_blank" rel="noreferrer" className={styles.statValue} style={{ textDecoration: 'none', color: 'inherit' }}>nsharma292004@gmail.com</a>
+              </div>
+              <div className={styles.statRow}>
+                <span className={styles.statLabel}>GitHub</span>
+                <a href="https://github.com/NancySharma-29" target="_blank" rel="noreferrer" className={styles.statValue} style={{ textDecoration: 'none', color: 'inherit' }}>NancySharma-29</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SKILLS -------------------------------------------------------- */}
+      <section className={styles.section} ref={skillsRef} id="skills">
+        <p className={styles.kicker}>
+          <span className={styles.kickerBar} />
+          Technical Skills
+        </p>
+        <h2 className={styles.sectionTitle}>What I analyze and build with</h2>
+        <div className={styles.skillGroups}>
+          {SKILL_GROUPS.map((group) => (
+            <div className={styles.skillGroup} key={group.label}>
+              <p className={styles.skillGroupLabel}>{group.label}</p>
+              {group.items.map((item) => (
+                <div className={styles.skillRow} key={item}>
+                  <div className={styles.skillTopLine}>
+                    <span>{item}</span>
+                  </div>
+                  <div className={styles.skillMeter}>
+                    <div className={styles.skillMeterFill} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PROJECTS -------------------------------------------------------- */}
+      <section className={styles.section} ref={projectsRef} id="projects">
+        <p className={styles.kicker}>
+          <span className={styles.kickerBar} />
+          Case Files
+        </p>
+        <h2 className={styles.sectionTitle}>Academic projects &amp; simulations</h2>
+        <div className={styles.projectList}>
+          {PROJECTS.map((project) => (
+            <div className={styles.projectRow} key={project.index}>
+              <span className={styles.projectIndex}>{project.index}</span>
+              <div className={styles.projectBody}>
+                <h3>{project.title}</h3>
+                <span className={styles.projectMeta}>{project.meta}</span>
+                <p>{project.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* EDUCATION -------------------------------------------------------- */}
+      <section className={styles.section} ref={eduRef}>
+        <p className={styles.kicker}>
+          <span className={styles.kickerBar} />
+          Education
+        </p>
+        <div className={styles.timeline}>
+          {EDUCATION.map((edu) => (
+            <div className={styles.timelineRow} key={edu.school}>
+              <span className={styles.timelineDate}>{edu.date}</span>
+              <div className={styles.timelineBody}>
+                <h3>{edu.school}</h3>
+                <p>{edu.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CERTIFICATIONS -------------------------------------------------------- */}
+      <section className={styles.section} ref={certRef} id="certifications">
+        <p className={styles.kicker}>
+          <span className={styles.kickerBar} />
+          Certifications
+        </p>
+        <div className={styles.certGrid}>
+          {CERTIFICATIONS.map((cert) => (
+            <a href={cert.url} target="_blank" rel="noreferrer" className={styles.certChip} key={cert.title} style={{ textDecoration: 'none' }}>
+              <span className={styles.certCheck}>
+                <CheckIcon />
+              </span>
+              <span>{cert.title}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* INTERESTS / CANVAS -------------------------------------------------------- */}
+      <section className={styles.section} ref={canvasRef} id="artwork">
+        <p className={`${styles.kicker} ${styles.revealItem}`}>
+          <span className={styles.kickerBar} />
+          Beyond the Screen
+        </p>
+        <div className={styles.canvasBlock}>
+          <div className={`${styles.canvasFrame} ${styles.revealItem}`}>
+            <PaletteIcon />
+          </div>
+          <p className={`${styles.canvasText} ${styles.revealItem}`}>
+            <span className={styles.canvasQuoteMark}>&ldquo;</span>
+            I actively practice fine-art <strong>portraiture</strong>. The
+            patience, attention to detail, and creative problem-solving it
+            takes to bring a canvas to life directly informs how I approach
+            data — <strong>parsing chaos into structured, visual
+              narratives.</strong>
+          </p>
+        </div>
+      </section>
+
+      {/* FOOTER / CONTACT -------------------------------------------------------- */}
+      <footer className={styles.footer} ref={footerRef} id="contact">
+        <h2 className={`${styles.footerTitle} ${styles.revealItem}`}>
+          Let&rsquo;s build something worth visualizing.
+        </h2>
+        <div className={`${styles.footerLinks} ${styles.revealItem}`}>
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nsharma292004@gmail.com" target="_blank" rel="noreferrer">nsharma292004@gmail.com</a>
+          <a href="tel:+919707356190">+91 97073 56190</a>
+          <a
+            href="https://linkedin.com/in/nancy-sharma-8ab256317"
+            target="_blank"
+            rel="noreferrer"
+          >
+            linkedin.com/in/nancy-sharma
+          </a>
+          <a
+            href="https://github.com/NancySharma-29"
+            target="_blank"
+            rel="noreferrer"
+          >
+            github.com/NancySharma-29
+          </a>
+        </div>
+        <p className={`${styles.footerMeta} ${styles.revealItem}`}>
+          Bangalore, Karnataka, India — © {new Date().getFullYear()} Nancy Sharma
+        </p>
+      </footer>
+    </div>
+  );
+}

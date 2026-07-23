@@ -1,0 +1,91 @@
+/* ==========================================================================
+   DESIGN TOKENS — "Canvas & Signal"
+   A warm, cinematic dark palette (practical amber lighting + cool monitor
+   glow) paired with a humanist display serif (portraiture / warmth) and a
+   mono utility face (data analytics / terminal precision).
+   ========================================================================== */
+
+:root {
+  /* Color */
+  --void: #0a0806;
+  --panel: #14100c;
+  --panel-raised: #1c1611;
+  --ember: #ff8a4a;
+  --ember-deep: #c9531f;
+  --ember-dim: rgba(255, 138, 74, 0.14);
+  --signal-blue: #6fa8d8;
+  --signal-blue-dim: rgba(111, 168, 216, 0.14);
+  --paper: #f6efe4;
+  --paper-dim: #bdb2a3;
+  --paper-faint: #8a8074;
+  --line: rgba(246, 239, 228, 0.1);
+  --line-strong: rgba(246, 239, 228, 0.2);
+
+  /* Type */
+  --font-display: var(--font-fraunces), 'Iowan Old Style', serif;
+  --font-body: var(--font-inter), -apple-system, sans-serif;
+  --font-mono: var(--font-mono-utility), 'SFMono-Regular', monospace;
+
+  /* Layout */
+  --edge: clamp(1.5rem, 5vw, 5rem);
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --radius-lg: 28px;
+
+  /* Motion */
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--void);
+}
+
+body {
+  margin: 0;
+  background: var(--void);
+  color: var(--paper);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--ember);
+  color: var(--void);
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Hairline scrollbar, webkit only — kept subtle, not a focal point */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--void);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--panel-raised);
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

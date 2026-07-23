@@ -1,0 +1,402 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 1.5rem 2.5rem;
+  transition: all 0.4s var(--ease-cinematic);
+  border-bottom: 1px solid transparent;
+  background: transparent;
+}
+
+.scrolled {
+  padding: 1rem 2.5rem;
+  background: rgba(10, 8, 6, 0.65); /* --void with opacity */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo a {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--paper);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: color 0.3s ease;
+}
+
+.logo a:hover {
+  color: var(--ember);
+}
+
+.desktopNav {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navLink {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--paper-dim);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  letter-spacing: 0.02em;
+  position: relative;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 1px;
+  background-color: var(--ember);
+  transition: width 0.3s var(--ease-cinematic);
+}
+
+.navLink:hover {
+  color: var(--paper);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* ------------------------------------- */
+/* Interactive Avatar Component */
+/* ------------------------------------- */
+
+.avatarWidget {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.avatarFrame {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--panel-raised);
+  border: 1px solid var(--line-strong);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  transition: transform 0.3s var(--ease-cinematic), border-color 0.3s ease;
+}
+
+.avatarWidget:hover .avatarFrame {
+  transform: scale(1.05);
+  border-color: var(--ember-dim);
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.avatarIconPlaceholder {
+  width: 22px;
+  height: 22px;
+  color: var(--paper-dim);
+  z-index: 2;
+  position: relative;
+}
+
+/* Simulated Audio Wave / Digital Animation */
+.digitalWave {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--signal-blue);
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.digitalWave.animating {
+  animation: pulse 1.5s infinite ease-in-out alternate;
+}
+
+.digitalWave:nth-child(1) { left: 8px; top: 16px; animation-delay: 0s; }
+.digitalWave:nth-child(2) { left: 16px; top: 16px; animation-delay: 0.2s; background: var(--ember); }
+.digitalWave:nth-child(3) { left: 24px; top: 16px; animation-delay: 0.4s; }
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.2; }
+  100% { transform: scale(2.5); opacity: 0.6; }
+}
+
+.muteButton {
+  position: absolute;
+  bottom: -2px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--void);
+  border: 1px solid var(--line-strong);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.muteButton:hover {
+  background: var(--ember);
+  color: var(--void);
+  border-color: var(--ember);
+}
+
+/* ------------------------------------- */
+/* Mobile Hamburger Menu & Drawer */
+/* ------------------------------------- */
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.bar {
+  width: 100%;
+  height: 2px;
+  background: var(--paper);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  transform-origin: 1px;
+}
+
+.mobileOverlay {
+  display: none;
+}
+
+/* ------------------------------------- */
+/* Search Modal */
+/* ------------------------------------- */
+
+.searchButton {
+  background: transparent;
+  border: none;
+  color: var(--paper-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease, transform 0.3s var(--ease-cinematic);
+  padding: 0.5rem;
+}
+
+.searchButton:hover {
+  color: var(--paper);
+  transform: scale(1.1);
+}
+
+.searchOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 8, 6, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  animation: fadeIn 0.3s var(--ease-cinematic);
+}
+
+.searchModal {
+  background: rgba(20, 16, 12, 0.6);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform-origin: top center;
+  animation: slideDown 0.4s var(--ease-cinematic);
+}
+
+.searchIcon {
+  color: var(--paper-faint);
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--paper-faint);
+}
+
+.closeSearch {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--line);
+  color: var(--paper-dim);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeSearch:hover {
+  background: var(--ember);
+  color: var(--void);
+  border-color: var(--ember);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Responsive Styles */
+@media (max-width: 1100px) {
+  .navList {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    padding: 1.2rem 1.5rem;
+  }
+  
+  .scrolled {
+    padding: 1rem 1.5rem;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+  }
+
+  .desktopNav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    padding-top: 80px;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: right 0.4s var(--ease-cinematic);
+    box-shadow: -10px 0 40px rgba(0,0,0,0.6);
+    z-index: 1000;
+  }
+
+  .desktopNav.mobileOpen {
+    right: 0;
+  }
+
+  .navList {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 2rem;
+    gap: 1.5rem;
+  }
+
+  .navLink {
+    font-size: 1.2rem;
+    color: var(--paper);
+  }
+
+  .barOpen1 { transform: rotate(45deg); background: var(--ember); }
+  .barOpen2 { opacity: 0; transform: translateX(20px); }
+  .barOpen3 { transform: rotate(-45deg); background: var(--ember); }
+}
