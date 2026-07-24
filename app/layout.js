@@ -27,6 +27,10 @@ export const metadata = {
   title: 'Nancy Sharma — Data Analyst',
   description:
     'Portfolio of Nancy Sharma — data analytics, visualization, and generative AI, with a working foundation in software development, viewed through the eye of a portrait artist.',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({ children }) {
