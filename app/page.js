@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import VideoIntro from '../components/VideoIntro';
 import ResumeSection from '../components/ResumeSection';
 import Navigation from '../components/Navigation';
+import Dashboard from '../components/Dashboard';
 
 export default function Home() {
   const resumeRef = useRef(null);
@@ -19,6 +20,7 @@ export default function Home() {
       <div ref={resumeRef}>
         <ResumeSection />
       </div>
+      <Dashboard />
     </main>
   );
 }

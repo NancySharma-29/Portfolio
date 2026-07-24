@@ -1,0 +1,494 @@
+/* ================================================================
+   Dashboard.module.css
+   Visitor analytics dashboard — inherits design tokens from globals
+   ================================================================ */
+
+/* ── Section ─────────────────────────────────────────────────── */
+.section {
+  padding: 7rem var(--edge) 6rem;
+  background: var(--void);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background grid */
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(246,239,228,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(246,239,228,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* Ember glow top-right */
+.section::after {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(ellipse at center, rgba(255,138,74,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Section Header ──────────────────────────────────────────── */
+.headerRow {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 0.75rem;
+  opacity: 0.9;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 500;
+  color: var(--paper);
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--paper-dim);
+  margin: 0;
+}
+
+.offlineBadge {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #e8c77a;
+  background: rgba(232, 199, 122, 0.08);
+  border: 1px solid rgba(232, 199, 122, 0.2);
+  border-radius: 100px;
+  padding: 0.2rem 0.8rem;
+}
+
+/* ── Live Strip ──────────────────────────────────────────────── */
+.liveStrip {
+  max-width: 1200px;
+  margin: 0 auto 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(246, 239, 228, 0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.liveWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf7d;
+  box-shadow: 0 0 0 0 rgba(76, 175, 125, 0.5);
+  animation: livePulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes livePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(76,175,125,0.6); }
+  70%  { box-shadow: 0 0 0 8px rgba(76,175,125,0); }
+  100% { box-shadow: 0 0 0 0 rgba(76,175,125,0); }
+}
+
+.liveLabel {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--paper-dim);
+}
+
+.liveLabel span {
+  color: #4caf7d;
+  font-weight: 600;
+}
+
+.stripDivider {
+  width: 1px;
+  height: 18px;
+  background: var(--line-strong);
+  flex-shrink: 0;
+}
+
+.stripNote {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--paper-faint);
+}
+
+/* ── Stat Grid ───────────────────────────────────────────────── */
+.statGrid {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+.statCard {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: border-color 0.3s ease, transform 0.3s var(--ease-cinematic), box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(16px);
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ember-dim), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.statCard:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.statCard:hover::before {
+  opacity: 1;
+}
+
+.cardLarge {
+  background: linear-gradient(135deg, rgba(28, 22, 17, 1) 0%, rgba(255, 138, 74, 0.06) 100%);
+  border-color: rgba(255, 138, 74, 0.2);
+}
+
+.statIcon {
+  color: var(--ember);
+  margin-bottom: 0.5rem;
+  opacity: 0.85;
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 600;
+  color: var(--ember);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--paper);
+  margin-top: 0.25rem;
+}
+
+.statSub {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--paper-faint);
+  letter-spacing: 0.04em;
+}
+
+/* ── Fade-in animation ───────────────────────────────────────── */
+.fadeIn {
+  animation: cardFadeIn 0.6s var(--ease-cinematic) forwards;
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Insight Row ─────────────────────────────────────────────── */
+.insightRow {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1rem;
+}
+
+.sideStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.insightCard {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  transition: border-color 0.3s ease, transform 0.3s var(--ease-cinematic);
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.insightCard:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.chartCard {
+  padding: 1.5rem 1.5rem 1rem;
+}
+
+.insightHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.insightTitle {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--paper);
+  letter-spacing: 0.02em;
+}
+
+.insightBadge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ember);
+  background: var(--ember-dim);
+  border: 1px solid rgba(255,138,74,0.15);
+  border-radius: 100px;
+  padding: 0.15rem 0.65rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── Sparkline Chart ─────────────────────────────────────────── */
+.chartWrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  height: 120px;
+}
+
+.chartCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  height: 100%;
+}
+
+.barOuter {
+  flex: 1;
+  width: 100%;
+  background: rgba(246, 239, 228, 0.05);
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.barFill {
+  width: 100%;
+  background: linear-gradient(to top, var(--ember), rgba(255, 138, 74, 0.5));
+  border-radius: 4px 4px 0 0;
+  animation: barGrow 0.7s var(--ease-cinematic) both;
+  min-height: 4px;
+}
+
+@keyframes barGrow {
+  from { height: 0 !important; }
+  to   { /* height from inline style */ }
+}
+
+.barLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--paper-faint);
+  letter-spacing: 0.04em;
+}
+
+.barCount {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--ember);
+  font-weight: 600;
+}
+
+/* ── Referrer ────────────────────────────────────────────────── */
+.referrerDisplay {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.referrerIcon {
+  width: 46px;
+  height: 46px;
+  background: var(--panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.referrerName {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.referrerSub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--paper-faint);
+  margin-top: 0.2rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── Device Donut ────────────────────────────────────────────── */
+.donutWrap {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.donutSvg {
+  flex-shrink: 0;
+}
+
+.donutArc {
+  transition: stroke-dasharray 1s var(--ease-cinematic);
+}
+
+.donutLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legendDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.legendText {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--paper-dim);
+  display: flex;
+  align-items: center;
+}
+
+/* ── Footer Note ─────────────────────────────────────────────── */
+.footerNote {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--paper-faint);
+  letter-spacing: 0.05em;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .statGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .insightRow {
+    grid-template-columns: 1fr;
+  }
+
+  .sideStack {
+    flex-direction: row;
+  }
+
+  .sideStack > * {
+    flex: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .section {
+    padding: 5rem 1.5rem 4rem;
+  }
+
+  .statGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .liveStrip {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .sideStack {
+    flex-direction: column;
+  }
+
+  .insightRow {
+    gap: 0.75rem;
+  }
+
+  .chartWrap {
+    height: 100px;
+  }
+
+  .donutWrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .statGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statCard {
+    padding: 1.25rem 1rem;
+  }
+}
