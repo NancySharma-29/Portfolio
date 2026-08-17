@@ -96,18 +96,7 @@ function SparklineChart({ data }) {
   );
 }
 
-// ─── Live Pulse Indicator ──────────────────────────────────────────────────
 
-function LivePulse({ count }) {
-  return (
-    <div className={styles.liveWrap}>
-      <span className={styles.liveDot} />
-      <span className={styles.liveLabel}>
-        <AnimatedNumber value={count} duration={800} /> live now
-      </span>
-    </div>
-  );
-}
 
 // ─── Device Donut ─────────────────────────────────────────────────────────
 
@@ -222,7 +211,7 @@ export default function Dashboard() {
   const [totalVisits, setTotalVisits] = useState(0);
   const [todayVisits, setTodayVisits] = useState(0);
   const [uniqueSessions, setUniqueSessions] = useState(0);
-  const [liveVisitors] = useState(() => Math.floor(Math.random() * 3) + 1);
+
   const [chartData, setChartData] = useState([]);
   const [referrer, setReferrer] = useState('Direct');
   const [deviceBreakdown, setDeviceBreakdown] = useState({ mobile: 0, desktop: 1 });
@@ -338,12 +327,7 @@ export default function Dashboard() {
         apiError={apiError}
       />
 
-      {/* Live indicator strip */}
-      <div className={styles.liveStrip}>
-        <LivePulse count={liveVisitors} />
-        <span className={styles.stripDivider} />
-        <span className={styles.stripNote}>Data updates on every visit</span>
-      </div>
+
 
       {/* ── Stat Cards ─────────────────────────────────────────── */}
       <div className={styles.statGrid}>
@@ -386,18 +370,7 @@ export default function Dashboard() {
           <div className={styles.statSub}>This browser</div>
         </div>
 
-        <div className={`${styles.statCard} ${isLoaded ? styles.fadeIn : ''}`} style={{ animationDelay: '300ms' }}>
-          <div className={styles.statIcon} style={{ color: '#e8c77a' }}>
-            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-          </div>
-          <div className={styles.statValue} style={{ color: '#e8c77a' }}>
-            <AnimatedNumber value={liveVisitors} duration={900} />
-          </div>
-          <div className={styles.statLabel}>Live Right Now</div>
-          <div className={styles.statSub}>Active visitors</div>
-        </div>
+
       </div>
 
       {/* ── Insight Row ───────────────────────────────────────── */}
