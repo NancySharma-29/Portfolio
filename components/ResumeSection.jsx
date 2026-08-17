@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ResumeModal from './ResumeModal';
 import styles from './ResumeSection.module.css';
 
 if (typeof window !== 'undefined') {
@@ -37,18 +38,6 @@ const SKILL_GROUPS = [
 const PROJECTS = [
   {
     index: 'DS.01',
-    title: 'Data Analytics Corporate Simulations',
-    meta: 'Quantium & Tata Group · via Forage · Remote',
-    body: 'Completed retail analytics data workflows spanning cleaning, analysis, and strategic output evaluation for commercial application — then built enterprise-level dashboard strategies, defining the operational and technical KPIs that support data-driven executive leadership.',
-  },
-  {
-    index: 'DS.02',
-    title: 'Mood-Enhancing Social Media Extension',
-    meta: 'Front-End Lead · Academic Project',
-    body: 'Engineered the front-end application architecture with a modern web stack, shaping a responsive, UX-optimized interactive browser extension designed around user wellbeing.',
-  },
-  {
-    index: 'DS.03',
     title: 'Data-Driven Career Navigation Platform',
     meta: 'Co-Developer',
     body: 'Co-developed a system built for undergraduate career planning, using relational queries and clean application workflows to structure and surface student paths.',
@@ -144,6 +133,7 @@ function useReveal(selector, options = {}) {
 }
 
 export default function ResumeSection() {
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
   const aboutRef = useReveal(`.${styles.revealItem}`, { stagger: 0.12 });
   const skillsRef = useReveal(`.${styles.skillGroup}`, { stagger: 0.1 });
   const projectsRef = useReveal(`.${styles.projectRow}`, { stagger: 0.12 });
@@ -201,6 +191,31 @@ export default function ResumeSection() {
                 <span className={styles.statLabel}>GitHub</span>
                 <a href="https://github.com/NancySharma-29" target="_blank" rel="noreferrer" className={styles.statValue} style={{ textDecoration: 'none', color: 'inherit' }}>NancySharma-29</a>
               </div>
+              <div className={styles.statRow} style={{ marginTop: '8px' }}>
+                <span className={styles.statLabel}>Resume PDF</span>
+                <button
+                  onClick={() => setIsResumeOpen(true)}
+                  style={{
+                    background: 'var(--ember, #ff8a4a)',
+                    color: '#0b0d12',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '4px 12px',
+                    fontSize: '0.8rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <span>View &amp; Download</span>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -238,7 +253,7 @@ export default function ResumeSection() {
           <span className={styles.kickerBar} />
           Case Files
         </p>
-        <h2 className={styles.sectionTitle}>Academic projects &amp; simulations</h2>
+        <h2 className={styles.sectionTitle}>Projects</h2>
         <div className={styles.projectList}>
           {PROJECTS.map((project) => (
             <div className={styles.projectRow} key={project.index}>
@@ -338,6 +353,9 @@ export default function ResumeSection() {
           Bangalore, Karnataka, India — © {new Date().getFullYear()} Nancy Sharma
         </p>
       </footer>
+
+      {/* Interactive Resume Modal */}
+      <ResumeModal isOpen={isResumeOpen} onClose={() => setIsResumeOpen(false)} />
     </div>
   );
 }

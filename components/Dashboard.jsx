@@ -162,6 +162,60 @@ function DeviceBreakdown({ mobile, desktop }) {
   );
 }
 
+// ─── Total Visitors Hero Banner ────────────────────────────────────────────
+
+function TotalVisitorsBanner({ count, isLoaded, apiError }) {
+  return (
+    <div className={`${styles.heroBanner} ${isLoaded ? styles.heroVisible : ''}`}>
+      {/* Decorative orbit rings */}
+      <div className={styles.heroOrbit1} />
+      <div className={styles.heroOrbit2} />
+
+      <div className={styles.heroContent}>
+        {/* Globe icon */}
+        <div className={styles.heroIconWrap}>
+          <svg viewBox="0 0 24 24" width="36" height="36" stroke="var(--ember)" strokeWidth="1.4" fill="none" strokeLinecap="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+        </div>
+
+        <div className={styles.heroTextBlock}>
+          <div className={styles.heroEyebrow}>All-Time · Never Resets</div>
+          <div className={styles.heroCount}>
+            {isLoaded ? (
+              <AnimatedNumber value={count} duration={2500} />
+            ) : (
+              <span className={styles.heroCountLoading}>—</span>
+            )}
+          </div>
+          <div className={styles.heroLabel}>Total Visitors</div>
+        </div>
+
+        <div className={styles.heroDivider} />
+
+        <div className={styles.heroMeta}>
+          <div className={styles.heroMetaItem}>
+            <span className={styles.heroMetaDot} style={{ background: '#4caf7d' }} />
+            <span>Live counter — increments on each real visit</span>
+          </div>
+          <div className={styles.heroMetaItem}>
+            <span className={styles.heroMetaDot} style={{ background: 'var(--ember)' }} />
+            <span>Persists across deployments &amp; server restarts</span>
+          </div>
+          {apiError && (
+            <div className={styles.heroMetaItem}>
+              <span className={styles.heroMetaDot} style={{ background: '#e8c77a' }} />
+              <span>Offline mode · Using local estimate</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Dashboard ────────────────────────────────────────────────────────
 
 export default function Dashboard() {
@@ -226,28 +280,36 @@ export default function Dashboard() {
     }));
     setChartData(chart);
 
-    // ── 4. Live count from countapi via our proxy
+    // ── 4. Persistent global counter via counterapi.dev
+    //    - never resets between deployments or server restarts
+    //    - increments once per browser session only
     const incrementAndFetch = async () => {
       try {
-        // Only increment once per session
         let count;
         if (!sessionId) {
+          // New session → POST to increment the global persistent counter
           const res = await fetch('/api/visit', { method: 'POST' });
           const data = await res.json();
           count = data.value;
         } else {
+          // Returning session → only read, don't increment again
           const res = await fetch('/api/visit');
           const data = await res.json();
           count = data.value;
         }
-        setTotalVisits(count || sessions + todayCount);
+        if (count && count > 0) {
+          setTotalVisits(count);
+        } else {
+          // API returned 0 (may not be initialized yet) — use local fallback
+          throw new Error('zero count');
+        }
       } catch {
-        // Fallback: use localStorage accumulated total
+        // Fallback: accumulate from localStorage date keys
         setApiError(true);
         const accumulated = Object.entries(stored)
           .filter(([k]) => /^\d{4}-\d{2}-\d{2}$/.test(k))
           .reduce((sum, [, v]) => sum + parseInt(v, 10), 0);
-        setTotalVisits(accumulated || 1);
+        setTotalVisits(Math.max(accumulated, 1));
       }
       setIsLoaded(true);
     };
@@ -269,6 +331,13 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* ── Total Visitors Hero ───────────────────────────────── */}
+      <TotalVisitorsBanner
+        count={totalVisits}
+        isLoaded={isLoaded}
+        apiError={apiError}
+      />
+
       {/* Live indicator strip */}
       <div className={styles.liveStrip}>
         <LivePulse count={liveVisitors} />
@@ -288,7 +357,7 @@ export default function Dashboard() {
             <AnimatedNumber value={totalVisits} duration={2000} />
           </div>
           <div className={styles.statLabel}>Total Visits</div>
-          <div className={styles.statSub}>All time · live counter</div>
+          <div className={styles.statSub}>All time · never resets</div>
         </div>
 
         <div className={`${styles.statCard} ${isLoaded ? styles.fadeIn : ''}`} style={{ animationDelay: '100ms' }}>
@@ -389,7 +458,7 @@ export default function Dashboard() {
 
       {/* ── Footer note ──────────────────────────────────────── */}
       <p className={styles.footerNote}>
-        Built with countapi.xyz · Session data stored locally · No cookies or third-party tracking
+        Powered by counterapi.dev · Global counter persists forever · No cookies or third-party tracking
       </p>
     </section>
   );

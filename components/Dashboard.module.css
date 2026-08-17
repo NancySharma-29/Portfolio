@@ -80,6 +80,166 @@
   padding: 0.2rem 0.8rem;
 }
 
+/* ── Total Visitors Hero Banner ─────────────────────────────── */
+.heroBanner {
+  max-width: 1200px;
+  margin: 0 auto 2.5rem;
+  position: relative;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 138, 74, 0.25);
+  background: linear-gradient(
+    135deg,
+    rgba(28, 22, 17, 0.98) 0%,
+    rgba(255, 138, 74, 0.07) 50%,
+    rgba(28, 22, 17, 0.98) 100%
+  );
+  overflow: hidden;
+  padding: 2.5rem 3rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s var(--ease-cinematic), transform 0.7s var(--ease-cinematic);
+}
+
+.heroVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Decorative orbit rings */
+.heroOrbit1,
+.heroOrbit2 {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  border: 1px solid rgba(255, 138, 74, 0.08);
+}
+
+.heroOrbit1 {
+  width: 320px;
+  height: 320px;
+  top: -120px;
+  right: -60px;
+  animation: orbitSpin 20s linear infinite;
+}
+
+.heroOrbit2 {
+  width: 200px;
+  height: 200px;
+  top: -60px;
+  right: 40px;
+  border-color: rgba(255, 138, 74, 0.05);
+  animation: orbitSpin 14s linear infinite reverse;
+}
+
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.heroIconWrap {
+  width: 72px;
+  height: 72px;
+  background: rgba(255, 138, 74, 0.08);
+  border: 1px solid rgba(255, 138, 74, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: heroPulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes heroPulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,138,74,0.15); }
+  50%       { box-shadow: 0 0 0 16px rgba(255,138,74,0); }
+}
+
+.heroTextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.heroEyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ember);
+  opacity: 0.75;
+}
+
+.heroCount {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 700;
+  color: var(--paper);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--paper) 0%, var(--ember) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroCountLoading {
+  color: var(--paper-faint);
+  -webkit-text-fill-color: var(--paper-faint);
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.9; }
+}
+
+.heroLabel {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--paper-dim);
+  letter-spacing: 0.02em;
+}
+
+.heroDivider {
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--line-strong), transparent);
+  flex-shrink: 0;
+}
+
+.heroMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.heroMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--paper-faint);
+  letter-spacing: 0.02em;
+}
+
+.heroMetaDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 /* ── Live Strip ──────────────────────────────────────────────── */
 .liveStrip {
   max-width: 1200px;
@@ -447,11 +607,37 @@
   .sideStack > * {
     flex: 1;
   }
+
+  .heroBanner {
+    padding: 2rem 2rem;
+  }
+
+  .heroDivider {
+    display: none;
+  }
 }
 
 @media (max-width: 700px) {
   .section {
     padding: 5rem 1.5rem 4rem;
+  }
+
+  .heroBanner {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .heroContent {
+    gap: 1.5rem;
+  }
+
+  .heroIconWrap {
+    width: 56px;
+    height: 56px;
+  }
+
+  .heroOrbit1,
+  .heroOrbit2 {
+    display: none;
   }
 
   .statGrid {
@@ -490,5 +676,13 @@
 
   .statCard {
     padding: 1.25rem 1rem;
+  }
+
+  .heroCount {
+    font-size: 3rem;
+  }
+
+  .heroBanner {
+    padding: 1.5rem 1.25rem;
   }
 }
