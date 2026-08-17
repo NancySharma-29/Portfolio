@@ -252,27 +252,45 @@
   color: var(--paper);
 }
 
-.projectTitleLink {
-  color: inherit;
+.projectRowClickable {
+  cursor: pointer;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: color 0.3s ease;
 }
 
-.projectTitleLink:hover {
+.projectRowClickable:hover h3 {
   color: var(--ember);
 }
 
-.projectExternalIcon {
-  opacity: 0.6;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+.projectHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.projectTitleLink:hover .projectExternalIcon {
-  opacity: 1;
-  transform: translate(2px, -2px);
+.repoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 138, 74, 0.12);
+  color: var(--ember);
+  border: 1px solid rgba(255, 138, 74, 0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  margin-top: 2px;
+}
+
+.projectRowClickable:hover .repoBadge {
+  background: var(--ember);
+  color: var(--void, #0b0d12);
+  border-color: var(--ember);
+  transform: translateY(-1px);
 }
 
 .projectMeta {

@@ -285,54 +285,64 @@ export default function ResumeSection() {
         </p>
         <h2 className={styles.sectionTitle}>Projects</h2>
         <div className={styles.projectList}>
-          {PROJECTS.map((project) => (
-            <div className={styles.projectRow} key={project.index}>
-              <span className={styles.projectIndex}>{project.index}</span>
-              <div className={styles.projectBody}>
-                <h3>
-                  {project.url ? (
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles.projectTitleLink}
-                    >
-                      <span>{project.title}</span>
-                      <svg
-                        viewBox="0 0 24 24"
-                        width="18"
-                        height="18"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className={styles.projectExternalIcon}
-                      >
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
-                      </svg>
-                    </a>
+          {PROJECTS.map((project) => {
+            const isLink = Boolean(project.url);
+            const CardTag = isLink ? 'a' : 'div';
+            const linkProps = isLink
+              ? {
+                  href: project.url,
+                  target: '_blank',
+                  rel: 'noreferrer',
+                  style: { textDecoration: 'none', color: 'inherit' },
+                }
+              : {};
+
+            return (
+              <CardTag
+                className={`${styles.projectRow} ${isLink ? styles.projectRowClickable : ''}`}
+                key={project.index}
+                {...linkProps}
+              >
+                <span className={styles.projectIndex}>{project.index}</span>
+                <div className={styles.projectBody}>
+                  <div className={styles.projectHeaderRow}>
+                    <h3>{project.title}</h3>
+                    {isLink && (
+                      <span className={styles.repoBadge}>
+                        <span>View Repository</span>
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="14"
+                          height="14"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
+                  <span className={styles.projectMeta}>{project.meta}</span>
+                  {project.highlights ? (
+                    <ul className={styles.projectHighlights}>
+                      {project.highlights.map((h, i) => (
+                        <li key={i}>
+                          <strong>{h.label}:</strong> {h.text}
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
-                    project.title
+                    <p>{project.body}</p>
                   )}
-                </h3>
-                <span className={styles.projectMeta}>{project.meta}</span>
-                {project.highlights ? (
-                  <ul className={styles.projectHighlights}>
-                    {project.highlights.map((h, i) => (
-                      <li key={i}>
-                        <strong>{h.label}:</strong> {h.text}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>{project.body}</p>
-                )}
-              </div>
-            </div>
-          ))}
+                </div>
+              </CardTag>
+            );
+          })}
         </div>
       </section>
 
