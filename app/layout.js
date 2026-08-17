@@ -26,7 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata = {
   title: 'Nancy Sharma — Data Analyst',
   description:
-    'Portfolio of Nancy Sharma — data analytics, visualization, and generative AI, with a working foundation in software development, viewed through the eye of a portrait artist.',
+    'Portfolio of Nancy Sharma — BCA Graduate & Data Analyst skilled in Python, SQL, Power BI, end-to-end data pipelines, relational modelling, and visual analytics.',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',

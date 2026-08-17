@@ -43,7 +43,7 @@ function UnmuteIcon() {
 }
 
 const INTRO_TEXT =
-  'Hi, I am Nancy Sharma. As a Data Analyst with a BCA background, I bring both technical rigor and visual design to my work. My focus is taking messy datasets and transforming them into clean, high-impact dashboards using SQL, Python, and Power BI. Combining technical precision with an eye for detail, I help translate complex data into business decisions. Welcome to my portfolio!';
+  'Hi, I am Nancy Sharma. As a BCA graduate and Data Analyst skilled in end-to-end data pipelines, relational modelling, and visual analytics, I combine full-stack development experience with corporate simulation insights from Tata Group and Quantium. Using Python, SQL, and Power BI, I analyze complex datasets to deliver actionable executive insights. Welcome to my portfolio!';
 
 export default function VideoIntro({ onScrollNext }) {
   const rootRef = useRef(null);
@@ -276,10 +276,9 @@ export default function VideoIntro({ onScrollNext }) {
         </h1>
 
         <p className={styles.subtitle}>
-          <strong>Turning raw data into clear stories</strong> — a BCA
-          graduate specializing in data analytics and visualization, with
-          working knowledge of software development and the eye of a
-          portrait artist for detail.
+          <strong>Transforming complex datasets into executive insights</strong> — a BCA
+          graduate & Data Analyst skilled in Python, SQL, Power BI, end-to-end data pipelines,
+          and relational modelling.
         </p>
       </div>
 

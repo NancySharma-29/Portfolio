@@ -14,59 +14,96 @@ const SKILL_GROUPS = [
   {
     label: 'Data Analytics & Visualization',
     items: [
-      'Exploratory Data Analysis (EDA)',
-      'Data Preparation',
+      'EDA & Data Cleaning',
+      'Data Imputation & Feature Engineering',
+      'Relational Data Modelling',
       'Technical KPI Definition',
-      'Data Storytelling & Strategy',
-      'Dashboard & Visual Design',
+      'Data Storytelling',
     ],
   },
   {
-    label: 'Tools & Frameworks',
-    items: ['Power BI', 'GenAI-Powered Workflows'],
+    label: 'Programming & Databases',
+    items: ['Python (Pandas, NumPy)', 'SQL (SQLite)', 'JavaScript', 'HTML / CSS'],
   },
   {
-    label: 'Programming & Query Languages',
-    items: ['Python', 'SQL (Relational Queries)', 'JavaScript'],
+    label: 'BI & Visualization',
+    items: ['Power BI (KPI Cards, Bar/Column Charts)', 'Dynamic Dashboards', 'MS Excel'],
   },
   {
-    label: 'Software Development (Supporting Skill)',
-    items: ['HTML', 'CSS', 'Software Application Architectures'],
+    label: 'AI & Developer Tools',
+    items: ['Gemini & Claude (GenAI Workflows)', 'VS Code', 'Git / GitHub', 'MS Office'],
+  },
+  {
+    label: 'Soft Skills & Leadership',
+    items: ['Technical Presentation', 'Business Ethics', 'Team Collaboration', 'Data Storytelling'],
+  },
+  {
+    label: 'Languages',
+    items: ['English', 'Hindi'],
   },
 ];
 
 const PROJECTS = [
   {
     index: 'DS.01',
+    title: 'Healthcare Flow & Readmission Analytics',
+    meta: 'Independent Project',
+    highlights: [
+      { label: 'Data Engineering', text: 'Processed and imputed missing values across 25,000+ hospital records using Python (Pandas, NumPy) in VS Code.' },
+      { label: 'SQL Querying', text: 'Executed SQL (SQLite) aggregations revealing a 71.11% readmission risk among frequent ER users (vs 46.13% standard).' },
+      { label: 'Power BI Dashboard', text: 'Designed an executive dashboard using KPI cards and clustered charts to pinpoint bed turnover bottlenecks and resource usage.' },
+    ],
+  },
+  {
+    index: 'DS.02',
     title: 'Data-Driven Career Navigation Platform',
-    meta: 'Co-Developer',
-    body: 'Co-developed a system built for undergraduate career planning, using relational queries and clean application workflows to structure and surface student paths.',
+    meta: 'Independent Project',
+    highlights: [
+      { label: 'Platform Architecture', text: 'Co-developed a career platform using Node.js, Express, and MongoDB, engineering REST APIs to streamline student skill discovery and job readiness.' },
+      { label: 'Automated Parser & Test Engine', text: 'Built a PDF resume keyword parser (pdf-parse, Multer) and a score-gated test engine to dynamically unlock projects and AI mentors.' },
+    ],
   },
 ];
 
 const EDUCATION = [
   {
-    date: '2023 — 2026',
+    date: 'July 2023 — July 2026',
     school: "St. Anne's First Grade College",
-    detail: 'Bachelor of Computer Applications (BCA) · Bengaluru, Karnataka',
+    detail: 'Bachelor of Computer Applications (BCA) · CGPA: 8.4 · Bengaluru, Karnataka',
   },
   {
-    date: '2021 — 2023',
+    date: 'April 2021 — March 2023',
     school: 'Little Flower House Senior Secondary School',
-    detail: '12th Standard · Mathematics and Science',
+    detail: '12th Standard (Mathematics and Science) · 63% · Varanasi, Uttar Pradesh',
   },
   {
-    date: '2020 — 2021',
+    date: 'April 2020 — March 2021',
     school: 'St. Albert High School',
-    detail: '10th Standard · Mathematics and Computer Science',
+    detail: '10th Standard (Mathematics and Computer Science) · 72% · New Bongaigaon, Assam',
   },
 ];
 
 const CERTIFICATIONS = [
-  { title: 'Tata GenAI Powered Data Analytics Job Simulation (Forage)', url: 'https://www.theforage.com/completion-certificates/ifobHAoMjQs9s6bKS/gMTdCXwDdLYoXZ3wG_ifobHAoMjQs9s6bKS_6a36c1d82fb5b3ec744dee8e_1783885749887_completion_certificate.pdf' },
-  { title: 'Quantium Data Analytics Job Simulation (Forage)', url: 'https://www.theforage.com/completion-certificates/32A6DqtsbF7LbKdcq/NkaC7knWtjSbi6aYv_32A6DqtsbF7LbKdcq_6a36c1d82fb5b3ec744dee8e_1784145538957_completion_certificate.pdf' },
-  { title: 'Tata Data Visualisation: Empowering Business with Effective Insights (Forage)', url: 'https://www.theforage.com/completion-certificates/ifobHAoMjQs9s6bKS/MyXvBcppsW2FkNYCX_ifobHAoMjQs9s6bKS_6a36c1d82fb5b3ec744dee8e_1784218009256_completion_certificate.pdf' },
-  { title: 'Foundations of Cybersecurity (Google / Coursera)', url: 'https://www.coursera.org/account/accomplishments/records/T9PYUT291B8Q' },
+  { 
+    title: 'Quantium Data Analytics Simulation (Forage)', 
+    subtitle: 'Retail & Store Analytics · Python, Uplift Testing, Customer Segmentation & Commercial Reporting (July 2026)',
+    url: 'https://www.theforage.com/completion-certificates/32A6DqtsbF7LbKdcq/NkaC7knWtjSbi6aYv_32A6DqtsbF7LbKdcq_6a36c1d82fb5b3ec744dee8e_1784145538957_completion_certificate.pdf' 
+  },
+  { 
+    title: 'Tata iQ - GenAI Powered Data Analytics Simulation (Forage)', 
+    subtitle: 'Predictive AI & Strategy · GenAI Tools, Predictive Risk Modelling & Agentic Collections Framework (July 2026)',
+    url: 'https://www.theforage.com/completion-certificates/ifobHAoMjQs9s6bKS/gMTdCXwDdLYoXZ3wG_ifobHAoMjQs9s6bKS_6a36c1d82fb5b3ec744dee8e_1783885749887_completion_certificate.pdf' 
+  },
+  { 
+    title: 'Tata Consultancy Services Data Visualization Simulation (Forage)', 
+    subtitle: 'Executive Dashboards · Visual Basic (VBA), Dashboard Development & Data Visualization (July 2026)',
+    url: 'https://www.theforage.com/completion-certificates/ifobHAoMjQs9s6bKS/MyXvBcppsW2FkNYCX_ifobHAoMjQs9s6bKS_6a36c1d82fb5b3ec744dee8e_1784218009256_completion_certificate.pdf' 
+  },
+  { 
+    title: 'Foundations of Cybersecurity (Google / Coursera)', 
+    subtitle: 'Security Fundamentals & Risk Analysis',
+    url: 'https://www.coursera.org/account/accomplishments/records/T9PYUT291B8Q' 
+  },
 ];
 
 function CheckIcon() {
@@ -156,15 +193,7 @@ export default function ResumeSection() {
           </div>
           <div className={styles.aboutContent}>
             <p className={`${styles.aboutText} ${styles.revealItem}`}>
-              Recent <strong>Computer Applications (BCA)</strong> graduate
-              specializing in <strong>data analytics and visualization</strong>,
-              with generative AI and a working foundation in software
-              development to back it up. Competent in cleaning, structuring,
-              and visualizing complex datasets into actionable business
-              insight — bridging the gap between raw data and clear decisions.
-              Driven by an analytical mindset sharpened through corporate
-              simulations at organizations like <strong>Tata Group</strong> and{' '}
-              <strong>Quantium</strong>.
+              Recent <strong>Computer Applications (BCA)</strong> graduate and <strong>Data Analyst</strong> skilled in end-to-end data pipelines, relational modelling, and visual analytics. Combines a full-stack development background with practical experience from top-tier simulations (<strong>Tata Group</strong>, <strong>Quantium</strong>) to clean, structure, and transform complex datasets. Proficient in <strong>Python</strong> (Pandas, NumPy), <strong>SQL</strong> (SQLite), and <strong>Power BI</strong>, with a proven track record of analysing <strong>25,000+ operational records</strong> to deliver actionable executive insights.
             </p>
             <div className={`${styles.statList} ${styles.revealItem}`}>
               <div className={styles.statRow}>
@@ -261,7 +290,17 @@ export default function ResumeSection() {
               <div className={styles.projectBody}>
                 <h3>{project.title}</h3>
                 <span className={styles.projectMeta}>{project.meta}</span>
-                <p>{project.body}</p>
+                {project.highlights ? (
+                  <ul className={styles.projectHighlights}>
+                    {project.highlights.map((h, i) => (
+                      <li key={i}>
+                        <strong>{h.label}:</strong> {h.text}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{project.body}</p>
+                )}
               </div>
             </div>
           ))}
@@ -299,7 +338,10 @@ export default function ResumeSection() {
               <span className={styles.certCheck}>
                 <CheckIcon />
               </span>
-              <span>{cert.title}</span>
+              <div className={styles.certTextGroup}>
+                <span className={styles.certTitle}>{cert.title}</span>
+                {cert.subtitle && <span className={styles.certSub}>{cert.subtitle}</span>}
+              </div>
             </a>
           ))}
         </div>

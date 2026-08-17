@@ -272,6 +272,39 @@
   max-width: 62ch;
 }
 
+.projectHighlights {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-width: 68ch;
+}
+
+.projectHighlights li {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--paper-dim);
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.projectHighlights li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--ember);
+  font-size: 0.85rem;
+}
+
+.projectHighlights li strong {
+  color: var(--paper);
+  font-weight: 500;
+}
+
 /* ---------------------------------------------------------------- EDUCATION */
 
 .timeline {
@@ -383,6 +416,29 @@
   line-height: 1.45;
   color: var(--paper-dim);
   transition: color 0.3s ease;
+}
+
+.certTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.certTitle {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--paper);
+  transition: color 0.3s ease;
+}
+
+.certSub {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--paper-faint);
+  display: block;
 }
 
 /* ---------------------------------------------------------------- INTERESTS / CANVAS */
