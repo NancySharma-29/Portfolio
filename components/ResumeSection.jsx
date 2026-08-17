@@ -47,6 +47,7 @@ const PROJECTS = [
   {
     index: 'DS.01',
     title: 'Healthcare Flow & Readmission Analytics',
+    url: 'https://github.com/NancySharma-29/healthcare-flow-analytics',
     meta: 'Independent Project',
     highlights: [
       { label: 'Data Engineering', text: 'Processed and imputed missing values across 25,000+ hospital records using Python (Pandas, NumPy) in VS Code.' },
@@ -288,7 +289,35 @@ export default function ResumeSection() {
             <div className={styles.projectRow} key={project.index}>
               <span className={styles.projectIndex}>{project.index}</span>
               <div className={styles.projectBody}>
-                <h3>{project.title}</h3>
+                <h3>
+                  {project.url ? (
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.projectTitleLink}
+                    >
+                      <span>{project.title}</span>
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={styles.projectExternalIcon}
+                      >
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                      </svg>
+                    </a>
+                  ) : (
+                    project.title
+                  )}
+                </h3>
                 <span className={styles.projectMeta}>{project.meta}</span>
                 {project.highlights ? (
                   <ul className={styles.projectHighlights}>
