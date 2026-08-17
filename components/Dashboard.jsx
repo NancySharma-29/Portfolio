@@ -5,20 +5,6 @@ import styles from './Dashboard.module.css';
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
-function getTodayKey() {
-  return new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-}
-
-function getLast7Days() {
-  const days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(d.toISOString().slice(0, 10));
-  }
-  return days;
-}
-
 function getShortDay(isoDate) {
   const d = new Date(isoDate + 'T00:00:00');
   return d.toLocaleDateString('en', { weekday: 'short' });
@@ -59,7 +45,6 @@ function AnimatedNumber({ value, duration = 1800 }) {
     const step = (now) => {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplay(Math.round(from + (to - from) * eased));
       if (progress < 1) raf.current = requestAnimationFrame(step);
@@ -96,7 +81,18 @@ function SparklineChart({ data }) {
   );
 }
 
+// ─── Live Pulse Indicator ──────────────────────────────────────────────────
 
+function LivePulse({ count }) {
+  return (
+    <div className={styles.liveWrap}>
+      <span className={styles.liveDot} />
+      <span className={styles.liveLabel}>
+        <AnimatedNumber value={count} duration={800} /> live active visitor{count === 1 ? '' : 's'}
+      </span>
+    </div>
+  );
+}
 
 // ─── Device Donut ─────────────────────────────────────────────────────────
 
@@ -104,7 +100,6 @@ function DeviceBreakdown({ mobile, desktop }) {
   const total = mobile + desktop || 1;
   const mobilePercent = Math.round((mobile / total) * 100);
   const desktopPercent = 100 - mobilePercent;
-  // SVG donut
   const r = 28;
   const circ = 2 * Math.PI * r;
   const desktopDash = (desktopPercent / 100) * circ;
@@ -113,9 +108,7 @@ function DeviceBreakdown({ mobile, desktop }) {
   return (
     <div className={styles.donutWrap}>
       <svg width="72" height="72" viewBox="0 0 72 72" className={styles.donutSvg}>
-        {/* background ring */}
         <circle cx="36" cy="36" r={r} fill="none" stroke="rgba(246,239,228,0.07)" strokeWidth="8" />
-        {/* desktop arc (ember) */}
         <circle
           cx="36" cy="36" r={r}
           fill="none"
@@ -126,7 +119,6 @@ function DeviceBreakdown({ mobile, desktop }) {
           transform="rotate(-90 36 36)"
           className={styles.donutArc}
         />
-        {/* mobile arc (signal-blue) */}
         <circle
           cx="36" cy="36" r={r}
           fill="none"
@@ -156,12 +148,10 @@ function DeviceBreakdown({ mobile, desktop }) {
 function TotalVisitorsBanner({ count, isLoaded, apiError }) {
   return (
     <div className={`${styles.heroBanner} ${isLoaded ? styles.heroVisible : ''}`}>
-      {/* Decorative orbit rings */}
       <div className={styles.heroOrbit1} />
       <div className={styles.heroOrbit2} />
 
       <div className={styles.heroContent}>
-        {/* Globe icon */}
         <div className={styles.heroIconWrap}>
           <svg viewBox="0 0 24 24" width="36" height="36" stroke="var(--ember)" strokeWidth="1.4" fill="none" strokeLinecap="round">
             <circle cx="12" cy="12" r="10" />
@@ -187,16 +177,16 @@ function TotalVisitorsBanner({ count, isLoaded, apiError }) {
         <div className={styles.heroMeta}>
           <div className={styles.heroMetaItem}>
             <span className={styles.heroMetaDot} style={{ background: '#4caf7d' }} />
-            <span>Live counter — increments on each real visit</span>
+            <span>100% Server-backed live counter — no localStorage</span>
           </div>
           <div className={styles.heroMetaItem}>
             <span className={styles.heroMetaDot} style={{ background: 'var(--ember)' }} />
-            <span>Persists across deployments &amp; server restarts</span>
+            <span>Session-protected — page refreshes do not increment visits</span>
           </div>
           {apiError && (
             <div className={styles.heroMetaItem}>
               <span className={styles.heroMetaDot} style={{ background: '#e8c77a' }} />
-              <span>Offline mode · Using local estimate</span>
+              <span>Connecting to analytics server...</span>
             </div>
           )}
         </div>
@@ -211,7 +201,7 @@ export default function Dashboard() {
   const [totalVisits, setTotalVisits] = useState(0);
   const [todayVisits, setTodayVisits] = useState(0);
   const [uniqueSessions, setUniqueSessions] = useState(0);
-
+  const [activeVisitors, setActiveVisitors] = useState(1);
   const [chartData, setChartData] = useState([]);
   const [referrer, setReferrer] = useState('Direct');
   const [deviceBreakdown, setDeviceBreakdown] = useState({ mobile: 0, desktop: 1 });
@@ -219,91 +209,75 @@ export default function Dashboard() {
   const [apiError, setApiError] = useState(false);
 
   useEffect(() => {
-    // ── 1. Referrer & device
-    setReferrer(parseReferrer());
-    const device = getDeviceType();
+    const currentReferrer = parseReferrer();
+    const currentDevice = getDeviceType();
+    setReferrer(currentReferrer);
 
-    // ── 2. LocalStorage session tracking
-    const todayKey = getTodayKey();
-    const storageKey = 'ns_visit_data';
+    // Session Protection: use sessionStorage to prevent page refreshes from incrementing visit counts
+    let sessionId = sessionStorage.getItem('ns_session');
+    const isNewSession = !sessionId;
 
-    let stored = {};
-    try {
-      stored = JSON.parse(localStorage.getItem(storageKey) || '{}');
-    } catch {
-      stored = {};
+    if (isNewSession) {
+      sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+      sessionStorage.setItem('ns_session', sessionId);
     }
 
-    // Sessions
-    let sessions = parseInt(stored.sessions || '0', 10);
-    const sessionId = sessionStorage.getItem('ns_session');
-    if (!sessionId) {
-      sessionStorage.setItem('ns_session', Date.now().toString());
-      sessions += 1;
-      stored.sessions = sessions.toString();
-    }
-    setUniqueSessions(sessions);
-
-    // Today visits
-    const todayCount = parseInt(stored[todayKey] || '0', 10) + 1;
-    stored[todayKey] = todayCount.toString();
-    setTodayVisits(todayCount);
-
-    // Device breakdown
-    const mobileCount = parseInt(stored.mobile || '0', 10) + (device === 'mobile' ? 1 : 0);
-    const desktopCount = parseInt(stored.desktop || '0', 10) + (device === 'desktop' ? 1 : 0);
-    stored.mobile = mobileCount.toString();
-    stored.desktop = desktopCount.toString();
-    setDeviceBreakdown({ mobile: mobileCount, desktop: desktopCount });
-
-    // Save
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(stored));
-    } catch {}
-
-    // ── 3. 7-day chart data
-    const last7 = getLast7Days();
-    const chart = last7.map((date) => ({
-      date,
-      count: parseInt(stored[date] || '0', 10),
-    }));
-    setChartData(chart);
-
-    // ── 4. Persistent global counter via counterapi.dev
-    //    - never resets between deployments or server restarts
-    //    - increments once per browser session only
-    const incrementAndFetch = async () => {
-      try {
-        let count;
-        if (!sessionId) {
-          // New session → POST to increment the global persistent counter
-          const res = await fetch('/api/visit', { method: 'POST' });
-          const data = await res.json();
-          count = data.value;
-        } else {
-          // Returning session → only read, don't increment again
-          const res = await fetch('/api/visit');
-          const data = await res.json();
-          count = data.value;
-        }
-        if (count && count > 0) {
-          setTotalVisits(count);
-        } else {
-          // API returned 0 (may not be initialized yet) — use local fallback
-          throw new Error('zero count');
-        }
-      } catch {
-        // Fallback: accumulate from localStorage date keys
-        setApiError(true);
-        const accumulated = Object.entries(stored)
-          .filter(([k]) => /^\d{4}-\d{2}-\d{2}$/.test(k))
-          .reduce((sum, [, v]) => sum + parseInt(v, 10), 0);
-        setTotalVisits(Math.max(accumulated, 1));
+    // Function to process server response
+    const applyServerAnalytics = (data) => {
+      if (data) {
+        if (typeof data.totalVisits === 'number') setTotalVisits(data.totalVisits);
+        if (typeof data.todayVisits === 'number') setTodayVisits(data.todayVisits);
+        if (typeof data.uniqueSessions === 'number') setUniqueSessions(data.uniqueSessions);
+        if (typeof data.activeVisitors === 'number') setActiveVisitors(data.activeVisitors);
+        if (Array.isArray(data.chartData)) setChartData(data.chartData);
+        if (data.deviceBreakdown) setDeviceBreakdown(data.deviceBreakdown);
       }
-      setIsLoaded(true);
     };
 
-    incrementAndFetch();
+    // Initial server fetch / increment
+    const fetchAnalytics = async () => {
+      try {
+        let res;
+        if (isNewSession) {
+          // Brand new session -> POST request to increment counts
+          res = await fetch('/api/visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId,
+              device: currentDevice,
+              referrer: currentReferrer,
+            }),
+          });
+        } else {
+          // Returning session / page refresh -> GET request without incrementing
+          res = await fetch(`/api/visit?sessionId=${encodeURIComponent(sessionId)}`);
+        }
+
+        if (!res.ok) throw new Error('API fetch failed');
+        const data = await res.json();
+        applyServerAnalytics(data);
+      } catch (err) {
+        setApiError(true);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+
+    fetchAnalytics();
+
+    // Real-time Heartbeat & Stats Polling (every 15s)
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/visit?sessionId=${encodeURIComponent(sessionId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          applyServerAnalytics(data);
+        }
+      } catch {}
+    }, 15000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -313,10 +287,10 @@ export default function Dashboard() {
         <div className={styles.eyebrow}>Live Analytics</div>
         <h2 className={styles.title}>Portfolio Dashboard</h2>
         <p className={styles.subtitle}>
-          Real-time visitor insights — tracked live, no cookies.
+          100% server-backed visitor metrics — real-time tracking, no cookies.
         </p>
         {apiError && (
-          <span className={styles.offlineBadge}>● Offline mode — local data only</span>
+          <span className={styles.offlineBadge}>● Connecting to live analytics server</span>
         )}
       </div>
 
@@ -327,7 +301,12 @@ export default function Dashboard() {
         apiError={apiError}
       />
 
-
+      {/* Live indicator strip */}
+      <div className={styles.liveStrip}>
+        <LivePulse count={activeVisitors} />
+        <span className={styles.stripDivider} />
+        <span className={styles.stripNote}>Server-backed live active session tracking</span>
+      </div>
 
       {/* ── Stat Cards ─────────────────────────────────────────── */}
       <div className={styles.statGrid}>
@@ -341,7 +320,7 @@ export default function Dashboard() {
             <AnimatedNumber value={totalVisits} duration={2000} />
           </div>
           <div className={styles.statLabel}>Total Visits</div>
-          <div className={styles.statSub}>All time · never resets</div>
+          <div className={styles.statSub}>All time · persistent server total</div>
         </div>
 
         <div className={`${styles.statCard} ${isLoaded ? styles.fadeIn : ''}`} style={{ animationDelay: '100ms' }}>
@@ -354,7 +333,7 @@ export default function Dashboard() {
             <AnimatedNumber value={todayVisits} duration={1400} />
           </div>
           <div className={styles.statLabel}>Today's Visits</div>
-          <div className={styles.statSub}>Resets at midnight</div>
+          <div className={styles.statSub}>Server daily log</div>
         </div>
 
         <div className={`${styles.statCard} ${isLoaded ? styles.fadeIn : ''}`} style={{ animationDelay: '200ms' }}>
@@ -367,10 +346,21 @@ export default function Dashboard() {
             <AnimatedNumber value={uniqueSessions} duration={1600} />
           </div>
           <div className={styles.statLabel}>Unique Sessions</div>
-          <div className={styles.statSub}>This browser</div>
+          <div className={styles.statSub}>Distinct session IDs</div>
         </div>
 
-
+        <div className={`${styles.statCard} ${isLoaded ? styles.fadeIn : ''}`} style={{ animationDelay: '300ms' }}>
+          <div className={styles.statIcon} style={{ color: '#e8c77a' }}>
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div className={styles.statValue} style={{ color: '#e8c77a' }}>
+            <AnimatedNumber value={activeVisitors} duration={900} />
+          </div>
+          <div className={styles.statLabel}>Live Right Now</div>
+          <div className={styles.statSub}>Active sessions</div>
+        </div>
       </div>
 
       {/* ── Insight Row ───────────────────────────────────────── */}
@@ -379,7 +369,7 @@ export default function Dashboard() {
         <div className={`${styles.insightCard} ${styles.chartCard} ${isLoaded ? styles.fadeIn : ''}`} style={{ animationDelay: '400ms' }}>
           <div className={styles.insightHeader}>
             <span className={styles.insightTitle}>7-Day Traffic</span>
-            <span className={styles.insightBadge}>This week</span>
+            <span className={styles.insightBadge}>Server analytics</span>
           </div>
           <SparklineChart data={chartData} />
         </div>
@@ -431,7 +421,7 @@ export default function Dashboard() {
 
       {/* ── Footer note ──────────────────────────────────────── */}
       <p className={styles.footerNote}>
-        Powered by counterapi.dev · Global counter persists forever · No cookies or third-party tracking
+        100% real-time server analytics · No localStorage · Session-protected increment
       </p>
     </section>
   );
