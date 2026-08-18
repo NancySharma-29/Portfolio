@@ -1,153 +1,122 @@
+import { Redis } from '@upstash/redis';
 import { NextResponse } from 'next/server';
 
-const NAMESPACE = 'nancy-sharma-portfolio-2025';
-const KEY = 'total-visitors';
-const BASE = 'https://counterapi.dev/api';
+const kv = Redis.fromEnv();
 
-// Maintain in-memory analytics store on global object across server requests
-if (!global._analyticsStore) {
-  global._analyticsStore = {
-    totalVisits: 0,
-    sessions: new Set(),
-    activeSessions: new Map(), // sessionId -> timestamp
-    dailyVisits: {}, // 'YYYY-MM-DD' -> count
-    devices: { mobile: 0, desktop: 0 },
-    referrers: {}, // referrer -> count
-    counterSynced: false,
-  };
-}
-
-function getTodayKey() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function cleanupActiveSessions() {
-  const store = global._analyticsStore;
-  const now = Date.now();
-  const cutoff = now - 5 * 60 * 1000; // 5 minute active window
-  for (const [sessId, ts] of store.activeSessions.entries()) {
-    if (ts < cutoff) {
-      store.activeSessions.delete(sessId);
-    }
-  }
-}
-
-function getLast7DaysData() {
-  const store = global._analyticsStore;
+function getLast7Days() {
   const days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
-    days.push({
-      date: dateStr,
-      count: store.dailyVisits[dateStr] || 0,
-    });
+    days.push(d.toISOString().slice(0, 10));
   }
   return days;
 }
 
-async function fetchGlobalCounter() {
-  try {
-    const res = await fetch(`${BASE}/${NAMESPACE}/${KEY}`, { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      if (typeof data.value === 'number') {
-        global._analyticsStore.totalVisits = Math.max(global._analyticsStore.totalVisits, data.value);
-      }
-    }
-  } catch {}
+async function fetchAnalyticsData() {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const last7Days = getLast7Days();
+  const dailyKeys = last7Days.map((d) => `visits:daily:${d}`);
+
+  const [
+    totalVisitsRaw,
+    todayVisitsRaw,
+    uniqueSessionsRaw,
+    activeVisitorsRaw,
+    dailyCountsRaw,
+    deviceCountsRaw,
+  ] = await Promise.all([
+    kv.get('total_visits'),
+    kv.get(`visits:daily:${todayStr}`),
+    kv.scard('unique_sessions'),
+    kv.zcard('active_sessions'),
+    kv.mget(...dailyKeys),
+    kv.mget('device:mobile', 'device:desktop'),
+  ]);
+
+  const chartData = last7Days.map((dateStr, i) => ({
+    date: dateStr,
+    count: Number(dailyCountsRaw?.[i] || 0),
+  }));
+
+  const mobile = Number(deviceCountsRaw?.[0] || 0);
+  const desktop = Number(deviceCountsRaw?.[1] || 0);
+
+  return {
+    totalVisits: Number(totalVisitsRaw || 0),
+    todayVisits: Number(todayVisitsRaw || 0),
+    uniqueSessions: Number(uniqueSessionsRaw || 0),
+    activeVisitors: Number(activeVisitorsRaw || 0),
+    chartData,
+    deviceBreakdown: {
+      mobile,
+      desktop,
+    },
+  };
 }
 
-async function incrementGlobalCounter() {
-  try {
-    const res = await fetch(`${BASE}/${NAMESPACE}/${KEY}/up`, { method: 'GET', cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      if (typeof data.value === 'number') {
-        global._analyticsStore.totalVisits = Math.max(global._analyticsStore.totalVisits, data.value);
-        return data.value;
-      }
-    }
-  } catch {}
-  global._analyticsStore.totalVisits += 1;
-  return global._analyticsStore.totalVisits;
-}
-
-// GET: Fetch real-time analytics data (heartbeat & page refreshes)
+// GET: Fetch real-time analytics & refresh active session timestamp
 export async function GET(request) {
-  const store = global._analyticsStore;
-  const { searchParams } = new URL(request.url);
-  const sessionId = searchParams.get('sessionId');
+  try {
+    const { searchParams } = new URL(request.url);
+    const sessionId = searchParams.get('sessionId');
+    const now = Date.now();
 
-  if (sessionId) {
-    store.sessions.add(sessionId);
-    store.activeSessions.set(sessionId, Date.now());
+    // Refresh active session timestamp if sessionId exists
+    if (sessionId) {
+      await kv.zadd('active_sessions', { score: now, member: sessionId });
+    }
+
+    // Prune active_sessions older than 60 seconds (score <= now - 60000)
+    await kv.zremrangebyscore('active_sessions', 0, now - 60000);
+
+    const data = await fetchAnalyticsData();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('KV Analytics GET Error:', error);
+    return NextResponse.json(
+      { error: 'Connecting to analytics server' },
+      { status: 503 }
+    );
   }
-
-  cleanupActiveSessions();
-
-  if (!store.counterSynced) {
-    await fetchGlobalCounter();
-    store.counterSynced = true;
-  }
-
-  const todayKey = getTodayKey();
-
-  return NextResponse.json({
-    totalVisits: store.totalVisits,
-    todayVisits: store.dailyVisits[todayKey] || 0,
-    uniqueSessions: store.sessions.size,
-    activeVisitors: Math.max(store.activeSessions.size, 1),
-    chartData: getLast7DaysData(),
-    deviceBreakdown: {
-      mobile: store.devices.mobile,
-      desktop: store.devices.desktop,
-    },
-    referrers: store.referrers,
-  });
 }
 
-// POST: Increment visit count ONLY for brand new sessions
+// POST: Increment analytics counters for new sessions
 export async function POST(request) {
-  const store = global._analyticsStore;
-  let body = {};
   try {
-    body = await request.json();
-  } catch {}
+    let body = {};
+    try {
+      body = await request.json();
+    } catch {}
 
-  const { sessionId, device = 'desktop', referrer = 'Direct' } = body;
-  const todayKey = getTodayKey();
+    const { sessionId, device = 'desktop' } = body;
+    const now = Date.now();
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const deviceKey = device === 'mobile' ? 'device:mobile' : 'device:desktop';
 
-  if (sessionId) {
-    store.sessions.add(sessionId);
-    store.activeSessions.set(sessionId, Date.now());
+    // Atomic increments & updates
+    await Promise.all([
+      kv.incr('total_visits'),
+      kv.incr(`visits:daily:${todayStr}`),
+      kv.incr(deviceKey),
+      ...(sessionId
+        ? [
+            kv.sadd('unique_sessions', sessionId),
+            kv.zadd('active_sessions', { score: now, member: sessionId }),
+          ]
+        : []),
+    ]);
+
+    // Prune active_sessions older than 60 seconds (score <= now - 60000)
+    await kv.zremrangebyscore('active_sessions', 0, now - 60000);
+
+    const data = await fetchAnalyticsData();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('KV Analytics POST Error:', error);
+    return NextResponse.json(
+      { error: 'Connecting to analytics server' },
+      { status: 503 }
+    );
   }
-
-  await incrementGlobalCounter();
-
-  store.dailyVisits[todayKey] = (store.dailyVisits[todayKey] || 0) + 1;
-
-  if (device === 'mobile') {
-    store.devices.mobile += 1;
-  } else {
-    store.devices.desktop += 1;
-  }
-
-  store.referrers[referrer] = (store.referrers[referrer] || 0) + 1;
-
-  cleanupActiveSessions();
-
-  return NextResponse.json({
-    totalVisits: store.totalVisits,
-    todayVisits: store.dailyVisits[todayKey],
-    uniqueSessions: store.sessions.size,
-    activeVisitors: Math.max(store.activeSessions.size, 1),
-    chartData: getLast7DaysData(),
-    deviceBreakdown: {
-      mobile: store.devices.mobile,
-      desktop: store.devices.desktop,
-    },
-    referrers: store.referrers,
-  });
 }
